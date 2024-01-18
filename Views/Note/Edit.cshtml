@@ -1,0 +1,47 @@
+﻿@model Notes.Models.Note
+
+<h2>Edit</h2>
+
+<form asp-action="Edit" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="form-group">
+        <label class="control-label">Note</label>
+        <textarea asp-for="NoteMessage" class="form-control"></textarea>
+        <span asp-validation-for="NoteMessage" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label">Image</label>
+        <input type="file" asp-for="ImageFile" class="form-control" />
+        <input type="text" asp-for="Image" class="form-control d-none" />
+        <input type="text" asp-for="UserId" class="form-control d-none" />
+        @if (Model.Image != null)
+        {
+            <img class="img-thumbnail" style="width:100px;height:50px" src="~/Images/@Model.Image" />
+        }
+        <span asp-validation-for="ImageFile" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <div class="form-check">
+            <input id="shared" asp-for="IsShared" class="form-check-input" />
+            <label class="form-check-label" for="shared">Share this note</label>
+        </div>
+        <span asp-validation-for="IsShared" class="text-danger"></span>
+    </div>
+
+    <div class="form-group my-2">
+        <input type="submit" value="Edit" class="btn btn-primary" />
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

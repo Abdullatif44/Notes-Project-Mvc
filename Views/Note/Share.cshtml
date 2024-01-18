@@ -1,0 +1,13 @@
+﻿@model Notes.Models.Note
+
+
+<div class="container-fluid my-5">
+    @if (Model.Image != null)
+    {
+        <img class="img-thumbnail" src="~/Images/@Model.Image" />
+    }
+    <h2 class="my-3">Shared By <span class="text-primary">@Model.User.Name</span></h2>
+    <p>@Model.NoteMessage</p>
+
+
+</div>

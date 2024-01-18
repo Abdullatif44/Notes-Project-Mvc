@@ -1,0 +1,121 @@
+﻿@model IEnumerable<Notes.Models.Note>
+<div class="container-fluid my-5">
+    @if (Model.Count() != 0)
+    {
+        <table id="example" class="table table-striped" style="width:100%">
+            <thead>
+                <tr>
+                    <th>
+                        Note
+                    </th>
+                    <th>
+                        Image
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model)
+                {
+                    <tr id="itemRow_@item.Id">
+                        <td>@item.NoteMessage</td>
+                        <td>
+                            @if (@item.Image != null)
+                            {
+                                <img class="img-thumbnail" style="width:100px;height:50px" src="~/Images/@item.Image" />
+                            }
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-controller="Note" class="btn btn-success" asp-route-id="@item.Id">Edit</a>
+                            <a onclick="confirmDelete(@item.Id)" class="btn btn-danger text-light delete-button" data-toggle="modal" data-target="#confirmDeleteModal">Delete</a>
+                            @if (item.IsShared)
+                            {
+                                <a asp-action="Share" asp-controller="Note" class="btn btn-success" asp-route-id="@item.Id">Share</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>
+                        Note
+                    </th>
+                    <th>
+                        Image
+                    </th>
+                    <th></th>
+                </tr>
+            </tfoot>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-warning d-flex justify-content-between" role="alert">
+            <span>You don't have any notes yet!</span>
+            <a asp-action="Create" asp-controller="Note" class="btn btn-primary">Create</a>
+        </div>
+
+    }
+</div>
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteModalLabel">Confirm Deletion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this item?
+            </div>
+            <div class="modal-footer" id="modalFooter">
+                <button id="closeModal" type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script>
+        function confirmDelete(id) {
+
+            $('#confirmDelete').remove();
+
+            var confirmButton = $('<a>', {
+                'id': 'confirmDelete',
+                'class': 'btn btn-danger',
+                'text': 'Yes',
+                'click': function () {
+                    $.ajax({
+                        url: '/Note/Delete/' + id,
+                        type: 'POST', // or 'GET'
+                        success: function () {
+                            $('#closeModal').click();
+                            // Remove the deleted item from the table
+                            $('#itemRow_' + id).remove();
+                        },
+                        error: function () {
+                            // Handle error
+                            $('#closeModal').click();
+                            alert('Failed to delete item.');
+                        }
+                    });
+                }
+            });
+
+            // Append the new "Yes" button to the modal footer
+            $('#modalFooter').append(confirmButton);
+
+        }
+    </script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
